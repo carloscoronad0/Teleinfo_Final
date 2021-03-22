@@ -27,5 +27,42 @@ int main(int argc, char const *argv[])
 	// Inicializacion del proxy como Cliente
 	inicializar_Proxy_Client(&proxy_client);
 
+	// Funcionamiento del servidor -----------------------------------------------------
+	// ---------------------------------------------------------------------------------
+
+	state header_orden;
+
+	int to_read;
+	char esp32_header[ESP32_HEADER_SIZE];
+
+	while(1)
+	{
+		// Estableciendo conexion con el cliente ---------------------------------------
+
+		socklen_t client_len = sizeof(proxy_server.client);
+		proxy_server.CLIENT_FD = accept((proxy_server.SERVER_FD), (struct sockaddr *) &(proxy_server.client), &client_len);
+		if (proxy_server.CLIENT_FD < 0) on_error("Error in establishing client connection");
+
+		printf("Client connected\n");
+
+		// Seccion para comunicacion PROXY - CONVERTER ---------------------------------
+		// -----------------------------------------------------------------------------
+
+
+
+		// Seccion para comunicacion ESP32 -PROXY --------------------------------------
+		// -----------------------------------------------------------------------------
+
+		while(1)
+		{
+			to_read = recv((proxy_server.CLIENT_FD), esp32_header, ESP32_HEADER_SIZE, 0);
+			header_orden = analizar_Header_ESP32(to_read, esp32_header);
+
+			// if (header_orden == todo_correcto) enviar
+			// Falta manejo de que hacer cuando ya este la orden
+		}
+
+	}
+
 	return 0;
 }
