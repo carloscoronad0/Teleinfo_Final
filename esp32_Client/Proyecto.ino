@@ -68,6 +68,7 @@ void loop() {
     delay(50);
     toRead();
     display.clearDisplay(); // Make sure the display is cleared
+    
     display.drawBitmap(0, 0, recive_buff, width, height, WHITE);
   }
   
