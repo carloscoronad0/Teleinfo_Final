@@ -5,7 +5,6 @@
 #define SERVER_PORT_INDEX 1
 #define CONVERTER_PORT_INDEX 2
 #define CONVERTER_IP_DIRECTION_INDEX 3
-#define ESP32_HEADER_SIZE 2
 
 // Estructura de SERVIDOR del proxy
 typedef struct
@@ -29,9 +28,6 @@ typedef struct
 	struct sockaddr_in converter;
 }s_proxy_client;
 
-typedef enum { todo_correcto, hubo_error, esperando } state;
-
 // Mencion de las funciones para que no surja errores al momento de la compilacion
 void inicializar_Proxy_Server(s_proxy_server *);
 void inicializar_Proxy_Client(s_proxy_client *);
-state analizar_Header_ESP32(int , char *);

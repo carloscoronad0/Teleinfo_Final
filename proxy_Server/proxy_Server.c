@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "proxy.h"		// Necesaria para las estructuras del proxy
+#include "headers.h"	// Necesaria para el manejo de los headers
 
 int main(int argc, char const *argv[])
 {
@@ -30,10 +31,18 @@ int main(int argc, char const *argv[])
 	// Funcionamiento del servidor -----------------------------------------------------
 	// ---------------------------------------------------------------------------------
 
-	state header_orden;
-
 	int to_read;
-	char esp32_header[ESP32_HEADER_SIZE];
+	int data_Size;
+
+	// For converter comunication ------------------------------------------------------
+
+	request_converter_header request_converter;
+	response_converter_header response_converter;
+
+	// For esp32 comunication ----------------------------------------------------------
+
+	state header_orden;
+	esp32_header request_esp32;
 
 	while(1)
 	{
@@ -53,13 +62,12 @@ int main(int argc, char const *argv[])
 		// Seccion para comunicacion ESP32 -PROXY --------------------------------------
 		// -----------------------------------------------------------------------------
 
-		while(1)
-		{
-			to_read = recv((proxy_server.CLIENT_FD), esp32_header, ESP32_HEADER_SIZE, 0);
-			header_orden = analizar_Header_ESP32(to_read, esp32_header);
+		to_read = recv((proxy_server.CLIENT_FD), &(request_esp32.Flag), sizeof(request_esp32), 0);
+		header_orden = analizar_Header_ESP32(to_read, &request_esp32);
 
-			// if (header_orden == todo_correcto) enviar
-			// Falta manejo de que hacer cuando ya este la orden
+		if (header_orden == todo_correcto)
+		{
+			to_read = send((proxy_server.CLIENT_FD), )
 		}
 
 	}

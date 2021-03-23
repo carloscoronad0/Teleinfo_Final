@@ -3,7 +3,7 @@
 #include <string.h> 	// Para el uso de memcpy
 #include "proxy.h"
 
-state analizar_Header_ESP32(int to_read, char *esp32_header)
+state analizar_Header_ESP32(int to_read, esp32_header *header)
 {
 	state orden_header;
 
@@ -18,9 +18,10 @@ state analizar_Header_ESP32(int to_read, char *esp32_header)
 	}
 	else
 	{
-		short ORDEN;
+		short ORDEN = (short) header->Flag;
 
-		memcpy(&ORDEN, esp32_header , sizeof(ORDEN));
+		printf("Numero recivido: %hi\n", ORDEN);
+
 		if (ORDEN > 0)
 		{
 			orden_header = hubo_error;
