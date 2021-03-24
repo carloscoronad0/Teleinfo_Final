@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "proxy.h" 		// Necesaria para las estructuras del proxy
+#include "headers.h"	// Necesatio para las estructuras de los headers
 
 
 void obteniendo_direccion(int numero_frame, char* direccion_completa)

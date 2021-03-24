@@ -26,4 +26,10 @@ typedef struct
 	char Width_Height[2];
 }response_converter_header;
 
+// Para el ESP32
 state analizar_Header_ESP32(int , char *);
+
+// Para el Converter
+void obteniendo_direccion(int, char *);
+int obtener_Data_Size(char *);
+void obtener_Fichero_Completo(request_converter_header *, char *, char *);
