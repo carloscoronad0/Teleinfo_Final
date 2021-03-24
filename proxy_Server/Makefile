@@ -2,11 +2,11 @@ CC = gcc
 IDIR = .
 CFLAGS = -I$(IDIR) -std=gnu99
 LIBS = 
-OBJ = principal.c punto.c cadena.c 
-DEPS = punto.h cadena.h
+OBJ = proxy_Server.c proxy_Inicializacion.c proxy_ESP32.c proxy_Converter.c
+DEPS = proxy.h headers.h
 
 %.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -Wall -c -o $@ $< $(CFLAGS)
 
 
 ds: $(OBJ) 

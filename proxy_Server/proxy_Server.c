@@ -14,8 +14,8 @@ int main(int argc, char const *argv[])
 	if (argc < 4) on_error("Usage: %s [port] \n", argv[0]);
 
 	// Declaracion de las estructuras que determinan como actuara el proxy
-	struct s_proxy_server proxy_server;
-	struct s_proxy_client proxy_client;
+	s_proxy_server proxy_server;
+	s_proxy_client proxy_client;
 
 	// Obtencion de las variables de el vector argv
 	proxy_server.SERVER_PORT = atoi(argv[SERVER_PORT_INDEX]);
@@ -28,16 +28,18 @@ int main(int argc, char const *argv[])
 	// Inicializacion del proxy como Cliente
 	inicializar_Proxy_Client(&proxy_client);
 
-	// Funcionamiento del servidor -----------------------------------------------------
+	// Funcionamiento PROXY ------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
 
 	int to_read;
 	int data_Size;
+	int total_length;
 
 	// For converter comunication ------------------------------------------------------
 
 	request_converter_header request_converter;
 	response_converter_header response_converter;
+	char direccion[50];
 
 	// For esp32 comunication ----------------------------------------------------------
 
@@ -53,6 +55,7 @@ int main(int argc, char const *argv[])
 		if (proxy_server.CLIENT_FD < 0) on_error("Error in establishing client connection");
 
 		printf("Client connected\n");
+		int frame = 1;
 
 		// Seccion para comunicacion PROXY - CONVERTER ---------------------------------
 		// -----------------------------------------------------------------------------
@@ -67,7 +70,8 @@ int main(int argc, char const *argv[])
 
 		if (header_orden == todo_correcto)
 		{
-			to_read = send((proxy_server.CLIENT_FD), )
+			//to_read = send((proxy_server.CLIENT_FD), )
+			frame++;
 		}
 
 	}
