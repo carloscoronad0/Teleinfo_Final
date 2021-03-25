@@ -36,7 +36,7 @@ char send_Error = '0';
 
 void setup() {
    Serial.begin(115200);
-   //         Connect to the network 
+   //      Connect to the network 
    connectWifi();
    
    Serial.println("\nStarting connection...");
@@ -44,7 +44,7 @@ void setup() {
    if (client.connect(servername, port)) {
     Serial.println("connected");
    }
-          // Oled Init 
+          // inicializamos la pantalla 
    Serial.println("Show IMAGE...");             
  //reset OLED display via software
   pinMode(OLED_RST, OUTPUT);
@@ -63,14 +63,19 @@ void setup() {
 
 void loop() {
   Serial.println("Start the film");
+  //bucle
   while(true){
+    //request to the server for the bitmap
     toWrite(send_Next);
     delay(50);
+    // receive from the server the bitbap
     toRead();
     display.clearDisplay(); // Make sure the display is cleared
     Serial.println(width);
     Serial.println(height);
+    //cargar bitmap
     display.drawBitmap(0,0,recive_buff, width,height,WHITE);
+    //mostrar
     display.display();
     delay(5000);
   }
