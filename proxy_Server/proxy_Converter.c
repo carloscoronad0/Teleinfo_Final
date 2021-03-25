@@ -70,7 +70,7 @@ int obtener_Data_Size(char *direccion)
 
 void obtener_Fichero_Completo(request_converter_header *header, char *packet, char *direccion)
 {
-	int data_size = (header->total_size) - sizeof(header);
+	int data_size = (header->Total_Size) - sizeof(header);
 	FILE *fichero;
 	// Se abre el fichero
 	fichero = fopen(direccion, "r");
@@ -82,9 +82,9 @@ void obtener_Fichero_Completo(request_converter_header *header, char *packet, ch
 	fgets(aux, data_size, fichero);
 
 	// Se copia el header al paquete
-	memcpy(packet, &(header->total_size), sizeof(header->total_size));
+	memcpy(packet, &(header->Total_Size), sizeof(header->Total_Size));
 	// Se copia los datos obtenidos al paquete
-	memcpy(packet + sizeof(header->total_size), aux, data_size);
+	memcpy(packet + sizeof(header->Total_Size), aux, data_size);
 
 	// Se cierra el fichero
 	fclose(fichero);

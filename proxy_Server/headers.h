@@ -27,7 +27,7 @@ typedef struct
 }response_converter_header;
 
 // Para el ESP32
-state analizar_Header_ESP32(int , char *);
+state analizar_Header_ESP32(int , esp32_header *);
 
 // Para el Converter
 void obteniendo_direccion(int, char *);

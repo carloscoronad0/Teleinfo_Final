@@ -4,7 +4,6 @@
 // Indices para obtener los valores del argv del main
 #define SERVER_PORT_INDEX 1
 #define CONVERTER_PORT_INDEX 2
-#define CONVERTER_IP_DIRECTION_INDEX 3
 
 // Estructura de SERVIDOR del proxy
 typedef struct

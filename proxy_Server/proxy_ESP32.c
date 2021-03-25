@@ -1,7 +1,7 @@
 #include <stdio.h>		// Libreria basica
 #include <stdlib.h>		// Libreria basica
 #include <string.h> 	// Para el uso de memcpy
-#include "proxy.h"
+#include "headers.h"
 
 state analizar_Header_ESP32(int to_read, esp32_header *header)
 {
@@ -13,10 +13,6 @@ state analizar_Header_ESP32(int to_read, esp32_header *header)
 		// El estado es esperando
 		orden_header = esperando;
 		printf("Header: Esperando\n");
-	}
-	else if (to_read < 0) // Si el valor es negativo es que hubo un error
-	{
-		on_error("Client read Error\n");
 	}
 	else // Si el valor es positivo es que hay algo para leer
 	{
