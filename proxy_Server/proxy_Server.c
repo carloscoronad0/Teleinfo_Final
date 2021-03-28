@@ -66,10 +66,11 @@ int main(int argc, char const *argv[])
 		while(1)
 		{
 			memset(direccion, 0, sizeof(direccion));
+			memset(receiver_buffer, 0, sizeof(receiver_buffer));
+			memset(aux, 0, sizeof(aux));
 			// Obtencion y envio del frame ---------------------------------------------
 			obteniendo_direccion(frame, direccion);
 			data_Size = obtener_Data_Size(direccion);
-			printf("data_Size: %d\n", data_Size);
 			request_converter.Total_Size = sizeof(request_converter) + data_Size;
 			printf("Total_Size: %d\n", (request_converter.Total_Size));
 
@@ -78,29 +79,27 @@ int main(int argc, char const *argv[])
 			printf("Paquete seteado a 0\n");
 
 			obtener_Fichero_Completo(&request_converter, paquete, direccion);
-			printf("FIchero obtenido\n");
+			printf("Fichero obtenido\n");
 			sent = send((proxy_client.CLIENT_FD), paquete, (request_converter.Total_Size), 0);
-			printf("FIchero enviado\n");
+			printf("Fichero enviado a converter\n");
 
 			// Recepcion de la respuesta del converter ---------------------------------
 			
-			to_read = 0;
 			received = 0;
-
-			to_read = recv((proxy_client.CLIENT_FD), receiver_buffer, sizeof(receiver_buffer), 0);
-			printf("Recieved: %d bytes from proxy\n", to_read);
 
 			while(received < sizeof(response_converter.Total_Size))
 			{
 				to_read = recv((proxy_client.CLIENT_FD), receiver_buffer, sizeof(receiver_buffer), 0);
-				printf("Recieved: %d bytes from proxy\n", to_read);
+				printf("Recieved: %d bytes from converter\n", to_read);
 				memcpy(aux + received, receiver_buffer, to_read);
 				received += to_read;
 			}
 
 			memcpy(&(response_converter.Total_Size), aux, sizeof(response_converter.Total_Size));
-			memset(paquete, 0, sizeof(paquete));
 
+			printf("Response size: %d\n", (int) (response_converter.Total_Size));
+
+			memset(paquete, 0, sizeof(paquete));
 			memcpy(paquete, aux, received);
 
 			while(received < (response_converter.Total_Size))
@@ -118,6 +117,8 @@ int main(int argc, char const *argv[])
 			to_read = recv((proxy_server.CLIENT_FD), &(request_esp32.Flag), sizeof(request_esp32), 0);
 			if (to_read < 0) on_error("Error en la recepcion del ESP32\n");
 
+			printf("Header esp32 recibido\n");
+
 			// Analisis del header y envio ---------------------------------------------
 
 			header_orden = analizar_Header_ESP32(to_read, &request_esp32);
@@ -126,6 +127,11 @@ int main(int argc, char const *argv[])
 			{
 				sent = send((proxy_server.CLIENT_FD), paquete, (response_converter.Total_Size), 0);
 				frame = (frame % 148) + 1;
+				printf("Sent: %d\n", sent);
+			}
+			else
+			{
+				on_error("Error con el ESP32\n");
 			}
 
 		}

@@ -112,7 +112,7 @@ int main(int argc, char const *argv[])
 			}
 
 			// leemos el archivo  header
-			memcpy(&lenSend,buffer, 2);
+			memcpy(&lenSend, buffer, 2);
 
 			while(recieved < lenSend)
 			{
@@ -133,18 +133,18 @@ int main(int argc, char const *argv[])
 			memcpy(&paleta,buffer + 56, 8); // paleta inicia en 54
 			//cast los valores a short (2 byts)
 
-			lenSend = (short) len;
+			lenSend += 2;
 			heightSend = height;
 			widgtSend = widgt;
 
 			//creamos el bufferSend header
 			memcpy(bufferSend, &lenSend, 2);
 			memcpy(bufferSend+2 , &widgtSend, 1);
-			memcpy(bufferSend+4, &heightSend, 1);
+			memcpy(bufferSend+3, &heightSend, 1);
 			// bitmap 
 			memcpy(bufferSend+6, buffer, 54);
 			// capturo la paleta y lo invierto con esto pero no estoy seguro son 8 byts 
-			paleta =  128 - paleta;
+			paleta = 128 - paleta;
 
 			memcpy(bufferSend+60, &paleta, 8);
 
@@ -158,7 +158,7 @@ int main(int argc, char const *argv[])
 			// -------------------------------------------------------------
 			// Aca tiene que ir el size de los datos que me estas enviando
 			// --------------------------------------------------------------
-			err = send(client_fd, bufferSend, /* ------------- */, 0); // Se envian los datos
+			err = send(client_fd, bufferSend, lenSend, 0); // Se envian los datos
 			printf("Sent bytes: %d\n", err);
 
 			if (err < 0) on_error("Client response failed\n");
