@@ -31,7 +31,9 @@ int main(int argc, char const *argv[])
 	int len;
 	int widgt;
 	int height; 
-	int paleta;
+	int paletaN;
+	int paletaB;
+
 	int initData;
 
 	short lenSend;
@@ -130,7 +132,10 @@ int main(int argc, char const *argv[])
 			memcpy(&initData,buffer + 12, 4); // pos 10 en bitmap 
 			memcpy(&widgt,buffer + 20, 4); //pos 18 
 			memcpy(&height,buffer + 24, 4);
-			memcpy(&paleta,buffer + 56, 8); // paleta inicia en 54
+
+			memcpy(&paletaN,buffer + 56, 4); // paleta inicia en 54
+			memcpy(&paletaB,buffer + 60, 4); // paleta inicia en 54
+
 			//cast los valores a short (2 byts)
 
 			lenSend += 2;
@@ -144,9 +149,11 @@ int main(int argc, char const *argv[])
 			// bitmap 
 			memcpy(bufferSend+6, buffer, 54);
 			// capturo la paleta y lo invierto con esto pero no estoy seguro son 8 byts 
-			paleta = 128 - paleta;
+			
+			memcpy(bufferSend+60, &paletaB, 4);
+			memcpy(bufferSend+64, &paletaN, 4);
 
-			memcpy(bufferSend+60, &paleta, 8);
+			printf("	los tamanos son initData: %d, y len: %d \n",initData , len);
 
 
 			for(int i =0 ; i < (initData - len);i++ ){ // 6 + 14 + 40 + 8
