@@ -10,24 +10,14 @@
 
 #define on_error(...) { fprintf(stderr, __VA_ARGS__); fflush(stderr); exit(-1); }
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 16500
 #define PORT_INDEX 1
-#define SEND_BUFFER_SIZE_INDEX 2
-
-typedef enum { recieved, waiting } state;
 
 int main(int argc, char const *argv[])
 {
-	if (argc < 3) on_error("Usage: %s [port] \n", argv[0]);
+	if (argc < 2) on_error("Usage: %s [port] \n", argv[0]);
 
 	int PORT = atoi(argv[PORT_INDEX]);
-	int SEND_BUFFER_SIZE = atoi(argv[SEND_BUFFER_SIZE_INDEX]);
-
-	// Si el size ingresado es mayor al size determinado de recepcion
-	// saltara un error debido a que se correra el riesgo de que se envien
-	// mas datos de los que se pueda almacenar el buffer de recpcion
-	if (SEND_BUFFER_SIZE > BUFFER_SIZE)
-		on_error("Send buffer size bigger than reception buffer\n");
 
 	// SETTING SOCKET -----------------------------------------------------
 	// --------------------------------------------------------------------
@@ -45,8 +35,8 @@ int main(int argc, char const *argv[])
 	int initData;
 
 	short lenSend;
-	short heightSend;
-	short widgtSend;
+	char heightSend;
+	char widgtSend;
 
 
 	server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -73,8 +63,6 @@ int main(int argc, char const *argv[])
 	// --------------------------------------------------------------------
 
 	int to_read;
-	unsigned short CLIENT_BUFFER_SIZE, client_send_size;
-	state header;
 
 	while(1)
 	{
@@ -93,24 +81,49 @@ int main(int argc, char const *argv[])
 			printf("Connected client\n");
 		}
 
-		header = waiting;
+		char aux[1000];
+		int recieved = 0;
 
 		while (1)
 		{
+			memset(buffer, 0, BUFFER_SIZE);
+			memset(bufferSend, 0, BUFFER_SIZE);
+			memset(aux, 0, sizeof(aux));
+
 			// PROCESSING OF PACKETS RECIEVED -----------------------------
 			// ------------------------------------------------------------
 
 			// Recibir el mensaje de parte del proxy
-			to_read = recv(client_fd, buffer, BUFFER_SIZE, 0);
+			to_read = recv(client_fd, aux, sizeof(aux), 0);
 			printf("Recieved: %d bytes from client\n", to_read);
 
-			if (!to_read) break; // Si ya no hay mas datos que leer, terminar la procesamiento 
 			if (to_read < 0) on_error("Client read Error\n");
 
+			recieved = to_read;
+			memcpy(buffer, aux, to_read);
+
+			while(recieved < sizeof(short))
+			{
+				to_read = recv(client_fd, aux, sizeof(aux), 0);
+				printf("Recieved: %d bytes from client\n", to_read);
+
+				memcpy(buffer + recieved, aux, to_read);
+				recieved += to_read;
+			}
 
 			// leemos el archivo  header
 			memcpy(&lenSend,buffer, 2);
 
+			while(recieved < lenSend)
+			{
+				to_read = recv(client_fd, aux, sizeof(aux), 0);
+				printf("Recieved: %d bytes from client\n", to_read);
+
+				memcpy(buffer + recieved, aux, to_read);
+				recieved += to_read;
+			}
+
+			// Se empieza con el analisis del archivo bmp -----------------------------------
 
 			/// leeamos el header del bit mao
 			memcpy(&len,buffer + 4, 4);
@@ -119,37 +132,38 @@ int main(int argc, char const *argv[])
 			memcpy(&height,buffer + 24, 4);
 			memcpy(&paleta,buffer + 56, 8); // paleta inicia en 54
 			//cast los valores a short (2 byts)
+
 			lenSend = (short) len;
-			heightSend = (short) height;
-			widgtSend = (short) widgt;
+			heightSend = height;
+			widgtSend = widgt;
 
 			//creamos el bufferSend header
-			memcpy(bufferSend,lenSend, 2);
-			memcpy(bufferSend+2 , widgtSend, 2);
-			memcpy(bufferSend+4, heightSend, 2);
+			memcpy(bufferSend, &lenSend, 2);
+			memcpy(bufferSend+2 , &widgtSend, 1);
+			memcpy(bufferSend+4, &heightSend, 1);
 			// bitmap 
 			memcpy(bufferSend+6, buffer, 54);
 			// capturo la paleta y lo invierto con esto pero no estoy seguro son 8 byts 
 			paleta =  128 - paleta;
 
-			memcpy(bufferSend+60, paleta, 8);
+			memcpy(bufferSend+60, &paleta, 8);
 
 
 			for(int i =0 ; i < (initData - len);i++ ){ // 6 + 14 + 40 + 8
 				bufferSend[68+i] = buffer[len - i]; // 68 byts del header y el bimap hasta 
 			}
 			
-			printf("Se termino de convertir el bitmap");
+			printf("Se termino de convertir el bitmap\n");
 
-
-
-			err = send(client_fd, buffer, to_read, 0); // Se envian los datos
+			// -------------------------------------------------------------
+			// Aca tiene que ir el size de los datos que me estas enviando
+			// --------------------------------------------------------------
+			err = send(client_fd, bufferSend, /* ------------- */, 0); // Se envian los datos
 			printf("Sent bytes: %d\n", err);
 
 			if (err < 0) on_error("Client response failed\n");
-			if (err != to_read) printf("Warning: wanted to send: %d, but sent %d\n", to_read, err);
 		}
 	}
 
 	return 0;
-}= 
+}

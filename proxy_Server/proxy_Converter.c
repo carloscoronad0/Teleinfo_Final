@@ -24,12 +24,13 @@ void obteniendo_direccion(int numero_frame, char* direccion_completa)
 
 	if (numero_frame < 10) // Si el numero es menor a 10 hay que agregar dos 0
 	{
-		direccion_completa[pos] = '0';
-		direccion_completa[pos+1] = '0';
+		char aux1[] = "00";
+		strcat(direccion_completa, aux1);
 	}
 	else if (numero_frame < 100) // Si es menor a 100 solo un 0
 	{
-		direccion_completa[pos] = '0';
+		char aux2[] = "0";
+		strcat(direccion_completa, aux2);
 	}
 
 	// Se convierte el numero a char[]
@@ -48,6 +49,8 @@ int obtener_Data_Size(char *direccion)
 {
 	// Obtencion del size de los datos -------------------------------------------------
 	// ---------------------------------------------------------------------------------
+
+	printf("Obteniendo Size\n");
 
 	FILE *fichero;
 

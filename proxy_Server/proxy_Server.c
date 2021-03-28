@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
 	// Obtencion de las variables de el vector argv
 	proxy_server.SERVER_PORT = atoi(argv[SERVER_PORT_INDEX]);
 	proxy_client.CONVERTER_PORT = atoi(argv[CONVERTER_PORT_INDEX]);
-	proxy_client.IP_DIRECTION = "127.0.0.1";
+	proxy_client.IP_DIRECTION = "127.0.0.1"; // Direccion de localhost
 
 	// Inicializacion del Proxy como Servidor
 	inicializar_Proxy_Server(&proxy_server);
@@ -44,7 +44,7 @@ int main(int argc, char const *argv[])
 	request_converter_header request_converter;
 	response_converter_header response_converter;
 	char direccion[50];
-	char *paquete;
+	char paquete[16500];
 
 	// For esp32 comunication ----------------------------------------------------------
 
@@ -65,33 +65,40 @@ int main(int argc, char const *argv[])
 		// Empieza la comunicacion
 		while(1)
 		{
+			memset(direccion, 0, sizeof(direccion));
 			// Obtencion y envio del frame ---------------------------------------------
 			obteniendo_direccion(frame, direccion);
 			data_Size = obtener_Data_Size(direccion);
+			printf("data_Size: %d\n", data_Size);
 			request_converter.Total_Size = sizeof(request_converter) + data_Size;
+			printf("Total_Size: %d\n", (request_converter.Total_Size));
 
-			paquete = (char *) malloc(request_converter.Total_Size);
 			memset(paquete, 0, sizeof(paquete));
 
-			obtener_Fichero_Completo(&request_converter, paquete, direccion);
-			sent = send((proxy_client.CLIENT_FD), paquete, (request_converter.Total_Size), 0);
+			printf("Paquete seteado a 0\n");
 
-			free(paquete);
+			obtener_Fichero_Completo(&request_converter, paquete, direccion);
+			printf("FIchero obtenido\n");
+			sent = send((proxy_client.CLIENT_FD), paquete, (request_converter.Total_Size), 0);
+			printf("FIchero enviado\n");
 
 			// Recepcion de la respuesta del converter ---------------------------------
 			
 			to_read = 0;
 			received = 0;
 
+			to_read = recv((proxy_client.CLIENT_FD), receiver_buffer, sizeof(receiver_buffer), 0);
+			printf("Recieved: %d bytes from proxy\n", to_read);
+
 			while(received < sizeof(response_converter.Total_Size))
 			{
 				to_read = recv((proxy_client.CLIENT_FD), receiver_buffer, sizeof(receiver_buffer), 0);
+				printf("Recieved: %d bytes from proxy\n", to_read);
 				memcpy(aux + received, receiver_buffer, to_read);
 				received += to_read;
 			}
 
 			memcpy(&(response_converter.Total_Size), aux, sizeof(response_converter.Total_Size));
-			paquete = (char *) malloc(response_converter.Total_Size);
 			memset(paquete, 0, sizeof(paquete));
 
 			memcpy(paquete, aux, received);
@@ -99,6 +106,7 @@ int main(int argc, char const *argv[])
 			while(received < (response_converter.Total_Size))
 			{
 				to_read = recv((proxy_client.CLIENT_FD), receiver_buffer, sizeof(receiver_buffer), 0);
+				printf("Recieved: %d bytes from proxy\n", to_read);
 				memcpy(paquete + received, receiver_buffer, to_read);
 				received += to_read;
 			}
@@ -120,7 +128,6 @@ int main(int argc, char const *argv[])
 				frame = (frame % 148) + 1;
 			}
 
-			free(paquete);
 		}
 
 	}
