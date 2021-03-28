@@ -143,21 +143,24 @@ int main(int argc, char const *argv[])
 			widgtSend = widgt;
 
 			//creamos el bufferSend header
-			memcpy(bufferSend, &lenSend, 2);
-			memcpy(bufferSend+2 , &widgtSend, 1);
-			memcpy(bufferSend+3, &heightSend, 1);
+			memcpy(bufferSend, &lenSend, 2);		//2
+			memcpy(bufferSend+2 , &widgtSend, 1);	//3
+			memcpy(bufferSend+3, &heightSend, 1);	//4
 			// bitmap 
-			memcpy(bufferSend+6, buffer, 54);
+			memcpy(bufferSend+6, buffer, 54);     	//58  
 			// capturo la paleta y lo invierto con esto pero no estoy seguro son 8 byts 
 			
-			memcpy(bufferSend+60, &paletaB, 4);
-			memcpy(bufferSend+64, &paletaN, 4);
+			memcpy(bufferSend+60, &paletaB, 4);		//62
+			memcpy(bufferSend+64, &paletaN, 4);		//66
 
 			printf("	los tamanos son initData: %d, y len: %d \n",initData , len);
 
 
-			for(int i =0 ; i < (initData - len);i++ ){ // 6 + 14 + 40 + 8
+			for(int i =0 ; i < ( len - initData);i++ ){ // 6 + 14 + 40 + 8
 				bufferSend[68+i] = buffer[len - i]; // 68 byts del header y el bimap hasta 
+
+				//printf("%c",buffer[len - i]);
+
 			}
 			
 			printf("Se termino de convertir el bitmap\n");
