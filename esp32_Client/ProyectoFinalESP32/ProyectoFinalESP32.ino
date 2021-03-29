@@ -32,6 +32,7 @@ const int BUFF_SIZE = 5500;
 unsigned char recive_buff[BUFF_SIZE+1];
 int width;
 int height;
+
 char send_Next = 0;
 char send_Error = 1;
 
@@ -77,11 +78,11 @@ void loop() {
     Serial.print("Largo ");
     Serial.println(height);
     //cargar bitmap
-    display.drawBitmap(0,0,recive_buff, width,height,WHITE);
+    display.drawBitmap(0,0,recive_buff, 128,64,WHITE);
     //mostrar
     display.display();
     Serial.println("Esperar ......");
-    delay(2000);
+    delay(100);
     display.clearDisplay(); // Make sure the display is cleared
 
   }
