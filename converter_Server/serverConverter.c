@@ -250,15 +250,26 @@ int main(int argc, char const *argv[])
 
 			memcpy(bufferSend + offset, &lenSend, sizeof(lenSend));
 			offset += sizeof(lenSend);
+<<<<<<< HEAD
 /*
+=======
+			printf("Offset: %d\n", offset);
+			
+>>>>>>> 2bc708b0df26e39d60e40ba1bc93b57879d4ef29
 			memcpy(bufferSend + offset, &widgtSend, sizeof(widgtSend));
 			offset += sizeof(widgtSend);
+			printf("Offset: %d\n", offset);
 
 			memcpy(bufferSend, &heightSend, sizeof(heightSend));
 			offset += sizeof(heightSend);
+<<<<<<< HEAD
 */
 			memset(bufferSend +offset, 0, 2);
 			offset+=2;
+=======
+			printf("Offset: %d\n", offset);
+
+>>>>>>> 2bc708b0df26e39d60e40ba1bc93b57879d4ef29
 			memcpy(bufferSend + offset, bufferaux, 1024);
 			
 			printf("Se termino de convertir el bitmap\n");
