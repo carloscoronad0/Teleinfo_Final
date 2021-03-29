@@ -31,25 +31,25 @@ int main(int argc, char const *argv[])
 	// Funcionamiento PROXY ------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
 
-	int to_read;
-	int received;
-	int data_Size;
-	int sent;
+	int to_read; // Variable donde almacenar la cantidad de datos que leyo el socket
+	int received; // Variable donde almacenar la cantidad de datos totales que llegaron
+	int data_Size; // Variable para almacenar el Size de los frames
+	int sent; // Variable para almacenar la cantidad de datos enviados
 
-	char receiver_buffer[1000];
-	char aux[1000];
+	char receiver_buffer[1000]; // Donce se almacena lo recibido por el socket
+	char aux[1000]; // Una variable temporal antes de pasar lo recibido al buffer principal
 
 	// For converter comunication ------------------------------------------------------
 
-	request_converter_header request_converter;
-	response_converter_header response_converter;
-	char direccion[50];
-	char paquete[16500];
+	request_converter_header request_converter; // Estructura del header del request del proxy al converter
+	response_converter_header response_converter; // Estructura del header del response del converter al proxy
+	char direccion[50]; // Donde se almacenara la direccion del frame
+	char paquete[16500]; // Donde se almacenara los headers y el contenido del frame
 
 	// For esp32 comunication ----------------------------------------------------------
 
-	state header_orden;
-	esp32_header request_esp32;
+	state header_orden; // Un enum para facilitar el analisis de los recibido del esp32
+	esp32_header request_esp32; // Estructura del header del esp32 - proxy
 
 	while(1)
 	{
@@ -65,29 +65,34 @@ int main(int argc, char const *argv[])
 		// Empieza la comunicacion
 		while(1)
 		{
+			// Se setea todos los chars a 0 para que no haya basura dentro de ellos y los mensajes que enviemos o 
+			// recibamos no se vean afecatdos
+
 			memset(direccion, 0, sizeof(direccion));
 			memset(receiver_buffer, 0, sizeof(receiver_buffer));
 			memset(aux, 0, sizeof(aux));
+
 			// Obtencion y envio del frame ---------------------------------------------
-			obteniendo_direccion(frame, direccion);
-			data_Size = obtener_Data_Size(direccion);
-			request_converter.Total_Size = sizeof(request_converter) + data_Size;
+
+			obteniendo_direccion(frame, direccion); // Se obtiene la direccion en base al numero de frame
+			data_Size = obtener_Data_Size(direccion); // Se obtiene el Size del fichero
+			request_converter.Total_Size = sizeof(request_converter) + data_Size; // Se calcula el Total Size = size del fichero + size del header
 			printf("Total_Size: %d\n", (request_converter.Total_Size));
 
-			memset(paquete, 0, sizeof(paquete));
+			memset(paquete, 0, sizeof(paquete)); // Se setea a 0 para evitar problemas como ya se meciono antes
 
 			printf("Paquete seteado a 0\n");
 
-			obtener_Fichero_Completo(&request_converter, paquete, direccion);
+			obtener_Fichero_Completo(&request_converter, paquete, direccion); // Obtenemos el paquete ya incluido con el header y los datos
 			printf("Fichero obtenido\n");
-			sent = send((proxy_client.CLIENT_FD), paquete, (request_converter.Total_Size), 0);
+			sent = send((proxy_client.CLIENT_FD), paquete, (request_converter.Total_Size), 0); // Se envia el paquete al converter
 			printf("Fichero enviado a converter\n");
 
 			// Recepcion de la respuesta del converter ---------------------------------
 			
 			received = 0;
 
-			while(received < sizeof(response_converter.Total_Size))
+			while(received < sizeof(response_converter.Total_Size)) // Mientras no se reciba la cantidad de bytes 
 			{
 				to_read = recv((proxy_client.CLIENT_FD), receiver_buffer, sizeof(receiver_buffer), 0);
 				printf("Recieved: %d bytes from converter\n", to_read);
