@@ -13,12 +13,12 @@
 #define BUFFER_SIZE 1028
 #define PORT_INDEX 1
 
-void convertir(int DS, int DPos, int x, int y, int LHeader, unsigned char *BUFFER, unsigned char BUFFERaux)
+void convertir(int DS, int DPos, int x, int y, int LHeader, unsigned char *BUFFER, unsigned char *BUFFERaux)
 {
 	int xr;
 	// char aux;
 
-	/ Despues de haber recibido los datos, es decir, tener lleno el buffer de chars
+	// Despues de haber recibido los datos, es decir, tener lleno el buffer de chars
     // (Header protoclo proxy-converter + BMP )con la información que llega del proxy
     // sacamos los siguientes datos:
     /**
