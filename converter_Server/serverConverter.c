@@ -115,9 +115,6 @@ int main(int argc, char const *argv[])
 	int initData;
 
 	short lenSend;
-	unsigned char heightSend;
-	unsigned char widgtSend;
-
 
 	server_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_fd < 0)
@@ -218,8 +215,6 @@ int main(int argc, char const *argv[])
 			convertir(len, initData, widgt, height, 2, buffer, bufferaux);
 
 			lenSend = 1028;
-			heightSend = 128;
-			widgtSend = 64;
 
 			int offset = 0;
 
