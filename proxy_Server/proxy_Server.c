@@ -132,6 +132,12 @@ int main(int argc, char const *argv[])
 			{
 				sent = send((proxy_server.CLIENT_FD), paquete, (response_converter.Total_Size), 0);
 				frame = (frame % 148) + 1;
+
+				while (frame == 61 || frame == 81 || frame == 87 || frame == 88 || frame == 89)
+				{
+					frame = (frame % 148) + 1;
+				}
+				
 				printf("Sent: %d\n", sent);
 			}
 			else

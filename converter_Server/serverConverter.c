@@ -250,12 +250,15 @@ int main(int argc, char const *argv[])
 
 			memcpy(bufferSend + offset, &lenSend, sizeof(lenSend));
 			offset += sizeof(lenSend);
-
+			printf("Offset: %d\n", offset);
+			
 			memcpy(bufferSend + offset, &widgtSend, sizeof(widgtSend));
 			offset += sizeof(widgtSend);
+			printf("Offset: %d\n", offset);
 
 			memcpy(bufferSend, &heightSend, sizeof(heightSend));
 			offset += sizeof(heightSend);
+			printf("Offset: %d\n", offset);
 
 			memcpy(bufferSend + offset, bufferaux, 1024);
 			
